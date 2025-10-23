@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompt Engineering Hackathon - Team Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .phase {
+            margin-bottom: 50px;
+            border-left: 5px solid #667eea;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .phase::before {
+            content: '';
+            position: absolute;
+            left: -15px;
+            top: 0;
+            width: 25px;
+            height: 25px;
+            background: #667eea;
+            border-radius: 50%;
+            border: 3px solid white;
+        }
+
+        .phase h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .phase-info {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        .phase-info strong {
+            color: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.95em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .prompt-box {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #764ba2;
+        }
+
+        .prompt-label {
+            font-weight: 600;
+            color: #764ba2;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tbody tr:nth-child(even) {
+            background: #f8f9ff;
+        }
+
+        .rating-input {
+            width: 60px;
+            text-align: center;
+            padding: 8px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #764ba2;
+        }
+
+        button.secondary {
+            background: #999;
+        }
+
+        button.secondary:hover {
+            background: #777;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .checklist {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .checklist-item label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .iteration-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, transparent);
+            margin: 40px 0;
+        }
+
+        .team-info-box {
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .score-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .score-card {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            border-top: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .score-card h3 {
+            color: #667eea;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .score-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #764ba2;
+        }
+
+        .note-area {
+            background: #fffbf0;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #ff9800;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+
+        .footer {
+            background: #f8f9ff;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .export-note {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 AI Prompt Engineering Hackathon</h1>
+            <p>Team Documentation & Progress Tracker</p>
+        </header>
+
+        <div class="content">
+            <!-- Export Information -->
+            <div class="export-note">
+                <strong>💡 Tip:</strong> Your data is saved in your browser. To preserve your work, take a screenshot or use your browser's "Print to PDF" feature (Ctrl+P or Cmd+P).
+            </div>
+
+            <div id="successMessage" class="success-message">
+                ✅ Progress saved! Your data is stored locally in your browser.
+            </div>
+
+            <!-- PHASE 1: PROBLEM SELECTION -->
+            <div class="phase">
+                <h2>📋 PHASE 1: Problem Selection (10 minutes)</h2>
+                
+                <div class="phase-info">
+                    <strong>Duration:</strong> 10 minutes | <strong>Goal:</strong> Select and understand your challenge
+                </div>
+
+                <div class="team-info-box">
+                    <h3>Team Information</h3>
+                    <div class="form-group">
+                        <label for="teamName">Team Name</label>
+                        <input type="text" id="teamName" placeholder="Enter your team name" onchange="saveData()">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="teamMembers">Team Members (comma-separated)</label>
+                            <input type="text" id="teamMembers" placeholder="Name 1, Name 2, Name 3, Name 4" onchange="saveData()">
+                        </div>
+                        <div class="form-group">
+                            <label for="submissionDate">Date</label>
+                            <input type="text" id="submissionDate" placeholder="MM/DD/YYYY" onchange="saveData()">
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px; color: #667eea;">Problem Statement</h3>
+                
+                <div class="form-group">
+                    <label for="problem">What is your challenge? (One clear sentence)</label>
+                    <textarea id="problem" placeholder="Example: How can a small coffee shop attract younger customers (18-25) without losing loyal customers?" onchange="saveData()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="problemImportance">Why does this problem matter? Why should someone care?</label>
+                    <textarea id="problemImportance" placeholder="Explain the significance and relevance of this problem..." onchange="saveData()"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="problemConstraints">Key Constraints or Context (budget, timeline, etc.)</label>
+                        <textarea id="problemConstraints" placeholder="Example: Budget: $500/month, Timeline: 3-6 months, Audience: Urban area" onchange="saveData()"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="successMetrics">How will you measure success? (Define 2-3 metrics)</label>
+                        <textarea id="successMetrics" placeholder="Example: 25% increase in young customers, maintain 90% existing customers" onchange="saveData()"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="initialThoughts">Initial Thoughts: What's your first intuition about solving this?</label>
+                    <textarea id="initialThoughts" placeholder="What do you think might help? Any initial hypotheses?" onchange="saveData()"></textarea>
+                </div>
+
+                <div class="checklist">
+                    <h4>Phase 1 Checklist</h4>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check1a" onchange="saveData()">
+                        <label for="check1a">Problem articulated in one clear sentence</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check1b" onchange="saveData()">
+                        <label for="check1b">Explained why this problem matters</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check1c" onchange="saveData()">
+                        <label for="check1c">Identified key constraints or context</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check1d" onchange="saveData()">
+                        <label for="check1d">Defined success metrics</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check1e" onchange="saveData()">
+                        <label for="check1e">Team consensus reached on problem</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- PHASE 2: PROMPT CRAFTING -->
+            <div class="phase">
+                <h2>✍️ PHASE 2: Prompt Crafting (40 minutes)</h2>
+                
+                <div class="phase-info">
+                    <strong>Duration:</strong> 40 minutes | <strong>Goal:</strong> Create 3 distinct prompting strategies
+                </div>
+
+                <!-- STRATEGY 1: ROLE PROMPTING -->
+                <h3 style="margin-top: 30px; color: #667eea;">Strategy 1: Role Prompting (12 minutes)</h3>
+                <p style="margin-bottom: 15px; color: #666;">You assign the AI a specific persona or role. The role shapes how the AI approaches the problem.</p>
+
+                <div class="form-group">
+                    <label for="roleChosen">What role did you choose for the AI?</label>
+                    <input type="text" id="roleChosen" placeholder="Example: Marketing executive, Customer, Data analyst, etc." onchange="saveData()">
+                </div>
+
+                <div class="form-group">
+                    <label for="roleReasoning">Why did you choose this role?</label>
+                    <textarea id="roleReasoning" placeholder="Explain how this role will bring unique perspective to your problem..." onchange="saveData()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="rolePrompt">Your Complete Role Prompting Prompt</label>
+                    <div class="prompt-box">
+                        <div class="prompt-label">📌 Paste your full prompt here</div>
+                        <textarea id="rolePrompt" placeholder="Example: 'You are a marketing executive who has successfully launched 5 brands targeting Gen-Z consumers...'" style="font-family: 'Courier New', monospace; font-size: 0.9em;" onchange="saveData()"></textarea>
+                    </div>
+                </div>
+
+                <!-- STRATEGY 2: STRUCTURED PROMPTING -->
+                <h3 style="margin-top: 40px; color: #667eea;">Strategy 2: Structured Prompting (12 minutes)</h3>
+                <p style="margin-bottom: 15px; color: #666;">You provide formats, templates, or constraints that structure the AI's response.</p>
+
+                <div class="form-group">
+                    <label for="structureType">What structure/format did you use?</label>
+                    <input type="text" id="structureType" placeholder="Example: Numbered framework, Decision matrix, Cost-benefit analysis, Time-based roadmap" onchange="saveData()">
+                </div>
+
+                <div class="form-group">
+                    <label for="structureReasoning">Why is this structure helpful for your problem?</label>
+                    <textarea id="structureReasoning" placeholder="Explain how this format will produce organized, usable output..." onchange="saveData()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="structuredPrompt">Your Complete Structured Prompting Prompt</label>
+                    <div class="prompt-box">
+                        <div class="prompt-label">📌 Paste your full prompt here</div>
+                        <textarea id="structuredPrompt" placeholder="Example: 'How can a coffee shop attract younger customers? Answer in this exact format: 1. PROBLEM ANALYSIS...' " style="font-family: 'Courier New', monospace; font-size: 0.9em;" onchange="saveData()"></textarea>
+                    </div>
+                </div>
+
+                <!-- STRATEGY 3: ITERATIVE PROMPTING -->
+                <h3 style="margin-top: 40px; color: #667eea;">Strategy 3: Iterative Prompting (16 minutes)</h3>
+                <p style="margin-bottom: 15px; color: #666;">You start with a broad prompt, then ask 2-3 refined follow-up questions to deepen the thinking.</p>
+
+                <div class="iteration-box">
+                    <strong>Iteration 1: The Broad Opening Question</strong>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label for="iter1">What's your opening prompt? (Keep it broad to get baseline thinking)</label>
+                        <textarea id="iter1" placeholder="Example: 'A coffee shop wants to attract younger customers (18-25). What strategies should they consider?'" style="font-family: 'Courier New', monospace; font-size: 0.9em;" onchange="saveData()"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="iter1Notes">What specific area will you explore deeper based on this response?</label>
+                        <input type="text" id="iter1Notes" placeholder="Example: Social media strategy, Event hosting, Product innovation" onchange="saveData()">
+                    </div>
+                </div>
+
+                <div class="iteration-box">
+                    <strong>Iteration 2: The First Refinement</strong>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label for="iter2">Based on Iteration 1, what's your refined follow-up prompt?</label>
+                        <textarea id="iter2" placeholder="Example: 'From your suggestions, social media seems most promising. Can you drill down into specific platforms...'" style="font-family: 'Courier New', monospace; font-size: 0.9em;" onchange="saveData()"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="iter2Notes">What gap are you trying to fill with this iteration?</label>
+                        <input type="text" id="iter2Notes" placeholder="Example: Need specifics on implementation, cost details, feasibility" onchange="saveData()">
+                    </div>
+                </div>
+
+                <div class="iteration-box">
+                    <strong>Iteration 3: The Deep Dive</strong>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label for="iter3">What's your final deep-dive prompt?</label>
+                        <textarea id="iter3" placeholder="Example: 'Walk me through exactly how to execute this first social media campaign...'" style="font-family: 'Courier New', monospace; font-size: 0.9em;" onchange="saveData()"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="iter3Notes">What specific tactical detail are you seeking here?</label>
+                        <input type="text" id="iter3Notes" placeholder="Example: Step-by-step execution plan, risk mitigation, resource requirements" onchange="saveData()">
+                    </div>
+                </div>
+
+                <div class="checklist">
+                    <h4>Phase 2 Checklist</h4>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check2a" onchange="saveData()">
+                        <label for="check2a">Role Prompting prompt written and documented</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check2b" onchange="saveData()">
+                        <label for="check2b">Structured Prompting prompt written and documented</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check2c" onchange="saveData()">
+                        <label for="check2c">All 3 Iterative Prompting iterations written and documented</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check2d" onchange="saveData()">
+                        <label for="check2d">All prompts address the same core problem</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check2e" onchange="saveData()">
+                        <label for="check2e">Team ready to test all three strategies</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- PHASE 3: TESTING & ITERATION -->
+            <div class="phase">
+                <h2>🧪 PHASE 3: Testing & Iteration (30 minutes)</h2>
+                
+                <div class="phase-info">
+                    <strong>Duration:</strong> 30 minutes | <strong>Goal:</strong> Test prompts, collect outputs, compare results
+                </div>
+
+                <h3 style="margin-top: 30px; color: #667eea;">Testing Results</h3>
+
+                <!-- ROLE PROMPTING RESULTS -->
+                <div style="margin-top: 25px;">
+                    <h4 style="color: #764ba2; margin-bottom: 15px;">Role Prompting Results</h4>
+                    
+                    <div class="form-group">
+                        <label for="roleOutput">AI's Response (paste the key outputs/insights)</label>
+                        <textarea id="roleOutput" placeholder="Paste the AI's response to your role prompting..." style="font-family: 'Courier New', monospace; font-size: 0.85em;" onchange="saveData()"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="roleObservations">Your Observations</label>
+                        <textarea id="roleObservations" placeholder="Was the response in character? Practical? Creative? Any gaps?" onchange="saveData()"></textarea>
+                    </div>
+                </div>
+
+                <!-- STRUCTURED PROMPTING RESULTS -->
+                <div style="margin-top: 25px;">
+                    <h4 style="color: #764ba2; margin-bottom: 15px;">Structured Prompting Results</h4>
+                    
+                    <div class="form-group">
+                        <label for="structuredOutput">AI's Response (paste the key outputs/insights)</label>
+                        <textarea id="structuredOutput" placeholder="Paste the AI's response to your structured prompting..." style="font-family: 'Courier New', monospace; font-size: 0.85em;" onchange="saveData()"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="structuredObservations">Your Observations</label>
+                        <textarea id="structuredObservations" placeholder="Did it follow the structure? Is it organized and usable? Any weak sections?" onchange="saveData()"></textarea>
+                    </div>
+                </div>
+
+                <!-- ITERATIVE PROMPTING RESULTS -->
+                <div style="margin-top: 25px;">
+                    <h4 style="color: #764ba2; margin-bottom: 15px;">Iterative Prompting Results</h4>
+                    
+                    <div class="form-group">
+                        <label for="iterOutput1">Iteration 1 Response</label>
+                        <textarea id="iterOutput1" placeholder="Paste the AI's initial response..." style="font-family: 'Courier New', monospace; font-size: 0.85em;" onchange="saveData()"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="iterOutput2">Iteration 2 Response</label>
+                        <textarea id="iterOutput2" placeholder="Paste the AI's refined response..." style="font-family: 'Courier New', monospace; font-size: 0.85em;" onchange="saveData()"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="iterOutput3">Iteration 3 Response</label>
+                        <textarea id="iterOutput3" placeholder="Paste the AI's final response..." style="font-family: 'Courier New', monospace; font-size: 0.85em;" onchange="saveData()"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="iterObservations">Your Observations on Iterative Approach</label>
+                        <textarea id="iterObservations" placeholder="Did iterations improve depth? Was the conversation natural? Which iteration was most useful?" onchange="saveData()"></textarea>
+                    </div>
+                </div>
+
+                <!-- COMPARISON & EVALUATION -->
+                <h3 style="margin-top: 40px; color: #667eea;">Strategy Comparison & Evaluation</h3>
+                
+                <p style="margin-bottom: 20px; color: #666; font-weight: 500;">Rate each strategy on these metrics (1-5 scale: 1=Poor, 5=Excellent)</p>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Role Prompting</th>
+                            <th>Structured Prompting</th>
+                            <th>Iterative Prompting</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Relevance to Problem</strong><br><small>Did it address your specific challenge?</small></td>
+                            <td><input type="number" class="rating-input" id="roleRelevance" min="1" max="5" onchange="saveData()"></td>
+                            <td><input type="number" class="rating-input" id="structRelevance" min="1" max="5" onchange="saveData()"></td>
+                            <td><input type="number" class="rating-input" id="iterRelevance" min="1" max="5" onchange="saveData()"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Specificity</strong><br><small>How concrete and actionable was the output?</small></td>
+                            <td><input type="number" class="rating-input" id="roleSpecificity" min="1" max="5" onchange="saveData()"></td>
+                            <td><input type="number" class="rating-input" id="structSpecificity" min="1" max="5" onchange="saveData()"></td>
+                            <td><input type="number" class="rating-input" id="iterSpecificity" min="1" max="5" onchange="saveData()"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Creativity</strong><br><small>How original were the ideas?</small></td>
+                            <td><input type="number" class="rating-input" id="roleCreativity" min="1" max="5" onchange="saveData()"></td>
+                            <td><input type="number" class="rating-input" id="structCreativity" min="1" max="5" onchange="saveData()"></td>
+                            <td><input type="number" class="rating-input" id="iterCreativity" min="1" max="5" onchange="saveData()"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Completeness</strong><br><small>Did it fully answer what you needed?</small></td>
+                            <td><input type="number" class="rating-input" id="roleCompleteness" min="1" max="5" onchange="saveData()"></td>
+                            <td><input type="number" class="rating-input" id="structCompleteness" min="1" max="5" onchange="saveData()"></td>
+                            <td><input type="number" class="rating-input" id="iterCompleteness" min="1" max="5" onchange="saveData()"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Usability</strong><br><small>Could you implement these ideas?</small></td>
+                            <td><input type="number" class="rating-input" id="roleUsability" min="1" max="5" onchange="saveData()"></td>
+                            <td><input type="number" class="rating-input" id="structUsability" min="1" max="5" onchange="saveData()"></td>
+                            <td><input type="number" class="rating-input" id="iterUsability" min="1" max="5" onchange="saveData()"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="note-area">
+                    <h4 style="margin-bottom: 12px;">📊 Strategy Scores Summary</h4>
+                    <div class="score-summary">
+                        <div class="score-card">
+                            <h3>Role Prompting</h3>
+                            <div class="score-value" id="roleTotal">0</div>
+                            <small>/25 points</small>
+                        </div>
+                        <div class="score-card">
+                            <h3>Structured Prompting</h3>
+                            <div class="score-value" id="structTotal">0</div>
+                            <small>/25 points</small>
+                        </div>
+                        <div class="score-card">
+                            <h3>Iterative Prompting</h3>
+                            <div class="score-value" id="iterTotal">0</div>
+                            <small>/25 points</small>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 40px; color: #667eea;">Winner Analysis</h3>
+
+                <div class="form-group">
+                    <label for="winningStrategy">Which strategy performed best overall?</label>
+                    <select id="winningStrategy" onchange="saveData()">
+                        <option value="">-- Select --</option>
+                        <option value="role">Role Prompting</option>
+                        <option value="structured">Structured Prompting</option>
+                        <option value="iterative">Iterative Prompting</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="winnerReasoning">Why did this strategy win? What made it superior?</label>
+                    <textarea id="winnerReasoning" placeholder="Explain specifically what this strategy did better than the others..." onchange="saveData()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="refinedPrompt">Your Refined Winning Prompt (improved version)</label>
+                    <div class="note-area">
+                        <p style="font-size: 0.9em; margin-bottom: 12px;">Take your winning strategy and make ONE refinement to make it even better</p>
+                        <textarea id="refinedPrompt" placeholder="Paste your improved/refined prompt here..." style="font-family: 'Courier New', monospace; font-size: 0.9em;" onchange="saveData()"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="refinedOutput">Result from Your Refined Prompt</label>
+                    <textarea id="refinedOutput" placeholder="Paste the output from your refined prompt..." style="font-family: 'Courier New', monospace; font-size: 0.85em;" onchange="saveData()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="refinementImpact">How did the refinement improve the output?</label>
+                    <textarea id="refinementImpact" placeholder="What changed? Did it get more specific, creative, actionable, or complete?" onchange="saveData()"></textarea>
+                </div>
+
+                <div class="checklist">
+                    <h4>Phase 3 Checklist</h4>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check3a" onchange="saveData()">
+                        <label for="check3a">All three strategies tested and outputs recorded</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check3b" onchange="saveData()">
+                        <label for="check3b">Comparison ratings completed for all strategies</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check3c" onchange="saveData()">
+                        <label for="check3c">Winning strategy identified with clear reasoning</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check3d" onchange="saveData()">
+                        <label for="check3d">Winning strategy refined and tested once</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check3e" onchange="saveData()">
+                        <label for="check3e">Documented how refinement improved the output</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- PHASE 4: PRESENTATION -->
+            <div class="phase">
+                <h2>🎤 PHASE 4: Hackathon Pitch (10 minutes)</h2>
+                
+                <div class="phase-info">
+                    <strong>Duration:</strong> 10 minutes total | <strong>Goal:</strong> Present findings and learnings
+                </div>
+
+                <h3 style="margin-top: 30px; color: #667eea;">Section 1: Problem & Approach (1.5 minutes)</h3>
+
+                <div class="form-group">
+                    <label for="pitchProblem">Opening: State your problem clearly (how will you capture the audience's attention?)</label>
+                    <textarea id="pitchProblem" placeholder="Craft an engaging 30-second problem statement..." onchange="saveData()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="pitchApproach">Explain your testing approach (how you tested the three strategies)</label>
+                    <textarea id="pitchApproach" placeholder="Briefly explain: We tested three prompting strategies to find the best approach..." onchange="saveData()"></textarea>
+                </div>
+
+                <h3 style="margin-top: 40px; color: #667eea;">Section 2: Results & Comparison (6 minutes)</h3>
+
+                <div class="form-group">
+                    <label for="pitchResults">Key findings: What did each strategy produce?</label>
+                    <textarea id="pitchResults" placeholder="Summarize the results: Role Prompting gave us..., Structured gave us..., Iterative gave us..." onchange="saveData()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="pitchWinner">Why your winning strategy won</label>
+                    <textarea id="pitchWinner" placeholder="Explain specifically what made this strategy superior for your problem..." onchange="saveData()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="pitchComparison">Brief comparison of all three approaches</label>
+                    <textarea id="pitchComparison" placeholder="Note the trade-offs and why you'd choose each for different problems..." onchange="saveData()"></textarea>
+                </div>
+
+                <h3 style="margin-top: 40px; color: #667eea;">Section 3: Learnings & Reflection (2.5 minutes)</h3>
+
+                <div class="form-group">
+                    <label for="pitchLearnings">What worked: Which elements of your strategy were most effective?</label>
+                    <textarea id="pitchLearnings" placeholder="Explain what specific aspects made your approach successful..." onchange="saveData()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="pitchChallenges">What didn't work: Were there any failures or limitations?</label>
+                    <textarea id="pitchChallenges" placeholder="Be honest about what didn't work and why..." onchange="saveData()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="pitchSurprises">What surprised you? Unexpected insights or discoveries?</label>
+                    <textarea id="pitchSurprises" placeholder="Share surprising findings or learnings from this process..." onchange="saveData()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="pitchTakeaway">Your biggest takeaway: If someone had to remember ONE thing from your presentation, what should it be?</label>
+                    <textarea id="pitchTakeaway" placeholder="Summarize your core insight about prompt engineering..." onchange="saveData()"></textarea>
+                </div>
+
+                <div class="note-area">
+                    <h4>💡 Speaking Tips for Your Pitch</h4>
+                    <ul style="margin-left: 20px; color: #666;">
+                        <li>Practice together as a team beforehand</li>
+                        <li>Divide speaking roles so everyone participates</li>
+                        <li>Time yourselves to stay within 10 minutes</li>
+                        <li>Use visuals: show your prompts, outputs, comparison table</li>
+                        <li>Speak clearly and make eye contact</li>
+                        <li>Be confident—you did the work!</li>
+                    </ul>
+                </div>
+
+                <div class="checklist">
+                    <h4>Phase 4 Checklist</h4>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check4a" onchange="saveData()">
+                        <label for="check4a">Opening problem statement prepared (engaging and clear)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check4b" onchange="saveData()">
+                        <label for="check4b">Results and comparison clearly explained</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check4c" onchange="saveData()">
+                        <label for="check4c">Learnings, surprises, and takeaways documented</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check4d" onchange="saveData()">
+                        <label for="check4d">Presentation practiced as a team</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check4e" onchange="saveData()">
+                        <label for="check4e">Timing verified (exactly 10 minutes)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check4f" onchange="saveData()">
+                        <label for="check4f">All team members assigned speaking roles</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FINAL NOTES -->
+            <div class="section-divider"></div>
+            <div class="phase">
+                <h2>📝 Final Notes & Reflections</h2>
+                
+                <div class="form-group">
+                    <label for="finalThoughts">What did your team learn overall from this hackathon experience?</label>
+                    <textarea id="finalThoughts" placeholder="Reflect on what you learned about AI prompting, teamwork, problem-solving, etc." onchange="saveData()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="nextSteps">How will you apply these prompting strategies in the future?</label>
+                    <textarea id="nextSteps" placeholder="What will you do differently next time you use AI tools?" onchange="saveData()"></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button onclick="saveData()">💾 Save All Progress</button>
+                    <button class="secondary" onclick="exportData()">📥 Export as Text</button>
+                    <button class="secondary" onclick="printPage()">🖨️ Print This Page</button>
+                    <button class="secondary" onclick="clearData()">🗑️ Clear All Data</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🚀 <strong>AI Prompt Engineering Hackathon</strong> | Team Documentation Sheet</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Data is stored locally in your browser. Export or print to preserve your work.</p>
+        </div>
+    </div>
+
+    <script>
+        // Save data to localStorage
+        function saveData() {
+            const formData = {};
+            const inputs = document.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                if (input.type === 'checkbox') {
+                    formData[input.id] = input.checked;
+                } else {
+                    formData[input.id] = input.value;
+                }
+            });
+            localStorage.setItem('hackathonData', JSON.stringify(formData));
+            showSuccessMessage();
+            updateScores();
+        }
+
+        // Load data from localStorage
+        function loadData() {
+            const saved = localStorage.getItem('hackathonData');
+            if (saved) {
+                const formData = JSON.parse(saved);
+                for (const [key, value] of Object.entries(formData)) {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (element.type === 'checkbox') {
+                            element.checked = value;
+                        } else {
+                            element.value = value;
+                        }
+                    }
+                }
+            }
+            updateScores();
+        }
+
+        // Show success message
+        function showSuccessMessage() {
+            const msg = document.getElementById('successMessage');
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 2000);
+        }
+
+        // Calculate and update scores
+        function updateScores() {
+            const roleScore = getScore('role');
+            const structScore = getScore('struct');
+            const iterScore = getScore('iter');
+            
+            document.getElementById('roleTotal').textContent = roleScore;
+            document.getElementById('structTotal').textContent = structScore;
+            document.getElementById('iterTotal').textContent = iterScore;
+        }
+
+        function getScore(prefix) {
+            const fields = ['Relevance', 'Specificity', 'Creativity', 'Completeness', 'Usability'];
+            let total = 0;
+            fields.forEach(field => {
+                const id = prefix + field;
+                const value = parseInt(document.getElementById(id).value) || 0;
+                total += value;
+            });
+            return total;
+        }
+
+        // Export data as text
+        function exportData() {
+            const teamName = document.getElementById('teamName').value || 'Team';
+            let exportText = `${'='.repeat(60)}\nAI PROMPT ENGINEERING HACKATHON - TEAM DOCUMENTATION\n${'='.repeat(60)}\n\n`;
+            exportText += `TEAM: ${teamName}\n`;
+            exportText += `MEMBERS: ${document.getElementById('teamMembers').value}\n`;
+            exportText += `DATE: ${document.getElementById('submissionDate').value}\n\n`;
+
+            exportText += `${'─'.repeat(60)}\nPHASE 1: PROBLEM SELECTION\n${'─'.repeat(60)}\n`;
+            exportText += `Problem: ${document.getElementById('problem').value}\n`;
+            exportText += `Why It Matters: ${document.getElementById('problemImportance').value}\n`;
+            exportText += `Constraints: ${document.getElementById('problemConstraints').value}\n`;
+            exportText += `Success Metrics: ${document.getElementById('successMetrics').value}\n\n`;
+
+            exportText += `${'─'.repeat(60)}\nPHASE 2: PROMPT CRAFTING\n${'─'.repeat(60)}\n`;
+            exportText += `ROLE PROMPTING:\nRole: ${document.getElementById('roleChosen').value}\n`;
+            exportText += `Prompt:\n${document.getElementById('rolePrompt').value}\n\n`;
+            exportText += `STRUCTURED PROMPTING:\nStructure: ${document.getElementById('structureType').value}\n`;
+            exportText += `Prompt:\n${document.getElementById('structuredPrompt').value}\n\n`;
+            exportText += `ITERATIVE PROMPTING:\nIteration 1:\n${document.getElementById('iter1').value}\n`;
+            exportText += `Iteration 2:\n${document.getElementById('iter2').value}\n`;
+            exportText += `Iteration 3:\n${document.getElementById('iter3').value}\n\n`;
+
+            exportText += `${'─'.repeat(60)}\nPHASE 3: TESTING & RESULTS\n${'─'.repeat(60)}\n`;
+            exportText += `Winning Strategy: ${document.getElementById('winningStrategy').value}\n`;
+            exportText += `Why It Won: ${document.getElementById('winnerReasoning').value}\n\n`;
+
+            exportText += `${'─'.repeat(60)}\nPHASE 4: PRESENTATION\n${'─'.repeat(60)}\n`;
+            exportText += `Key Takeaway: ${document.getElementById('pitchTakeaway').value}\n\n`;
+
+            exportText += `${'─'.repeat(60)}\nFINAL REFLECTIONS\n${'─'.repeat(60)}\n`;
+            exportText += `Overall Learnings: ${document.getElementById('finalThoughts').value}\n`;
+            exportText += `Next Steps: ${document.getElementById('nextSteps').value}\n`;
+
+            const blob = new Blob([exportText], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${teamName.replace(/\s+/g, '_')}_Hackathon_Documentation.txt`;
+            a.click();
+        }
+
+        // Print page
+        function printPage() {
+            window.print();
+        }
+
+        // Clear all data
+        function clearData() {
+            if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                localStorage.removeItem('hackathonData');
+                document.querySelectorAll('input, textarea, select').forEach(input => {
+                    if (input.type === 'checkbox') {
+                        input.checked = false;
+                    } else {
+                        input.value = '';
+                    }
+                });
+                updateScores();
+                alert('All data cleared!');
+            }
+        }
+
+        // Load data when page loads
+        window.addEventListener('load', loadData);
+
+        // Auto-save every 30 seconds
+        setInterval(saveData, 30000);
+    </script>
+</body>
+</html>
